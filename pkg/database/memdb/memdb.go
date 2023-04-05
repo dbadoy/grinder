@@ -7,7 +7,7 @@ import (
 	"github.com/dbadoy/grinder/pkg/database"
 )
 
-var _ = database.Database(&MemoryDB{})
+var _ database.Database = (*MemoryDB)(nil)
 
 type MemoryDB struct {
 	mu sync.Mutex

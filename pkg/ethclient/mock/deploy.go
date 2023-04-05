@@ -6,12 +6,10 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func DeployContract(m *mock, bytecode []byte) (common.Address, error) {
-	pub := crypto.FromECDSAPub(&m.privateKey.PublicKey)
-	nonce, err := m.c.NonceAt(context.Background(), common.BytesToAddress(pub), nil)
+	nonce, err := m.c.NonceAt(context.Background(), m.addr, nil)
 	if err != nil {
 		return common.Address{}, err
 	}
@@ -29,7 +27,7 @@ func DeployContract(m *mock, bytecode []byte) (common.Address, error) {
 		Data:     bytecode,
 	})
 
-	signed, err := types.SignTx(tx, types.LatestSignerForChainID(chainID), m.privateKey)
+	signed, err := types.SignTx(tx, types.LatestSignerForChainID(chainID), m.priv)
 	if err != nil {
 		return common.Address{}, err
 	}

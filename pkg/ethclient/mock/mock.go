@@ -24,8 +24,9 @@ var (
 )
 
 type mock struct {
-	c          *backends.SimulatedBackend
-	privateKey *ecdsa.PrivateKey
+	c    *backends.SimulatedBackend
+	priv *ecdsa.PrivateKey
+	addr common.Address
 
 	supportSubscribe bool
 }
@@ -54,7 +55,8 @@ func New(hexPriv string) (*mock, error) {
 	blockGasLimit := uint64(15000000)
 	return &mock{
 		c:                backends.NewSimulatedBackend(genesisAlloc, blockGasLimit),
-		privateKey:       private,
+		priv:             private,
+		addr:             address,
 		supportSubscribe: false,
 	}, nil
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/dbadoy/grinder/pkg/ethclient"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
@@ -18,6 +19,8 @@ import (
 var (
 	// simulated backend always uses chainID 1337.
 	chainID = big.NewInt(1337)
+
+	_ ethclient.Client = (*mock)(nil)
 )
 
 type mock struct {

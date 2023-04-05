@@ -24,9 +24,10 @@ var (
 )
 
 type mock struct {
-	c    *backends.SimulatedBackend
-	priv *ecdsa.PrivateKey
+	c *backends.SimulatedBackend
+
 	addr common.Address
+	priv *ecdsa.PrivateKey
 
 	supportSubscribe bool
 }

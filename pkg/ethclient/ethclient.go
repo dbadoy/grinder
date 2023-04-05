@@ -37,7 +37,7 @@ type Client interface {
 	StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
 }
 
-var _ = Client(&client{})
+var _ Client = (*client)(nil)
 
 type client struct {
 	endpoint string

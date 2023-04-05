@@ -7,7 +7,7 @@ import (
 	"github.com/dbadoy/grinder/pkg/database"
 )
 
-var _ = Engine(&Solo{})
+var _ Engine = (*Solo)(nil)
 
 type Solo struct {
 	localnode net.Addr

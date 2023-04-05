@@ -7,7 +7,7 @@ import (
 	"github.com/dbadoy/grinder/pkg/database"
 )
 
-// var _ = Engine(&CFT{})
+// var _ Engine = (*CFT)(nil)
 
 type CFT struct {
 	localnode net.Addr

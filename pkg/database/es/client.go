@@ -7,7 +7,7 @@ import (
 	"github.com/elastic/go-elasticsearch"
 )
 
-var _ = database.Database(&Client{})
+var _ database.Database = (*Client)(nil)
 
 type Client struct {
 	conn *elasticsearch.Client

@@ -15,8 +15,8 @@ var (
 	emptySlot = make([]byte, 32)
 )
 
-// eip1822WithTransaction checks to see if the given
-// transaction is a UUPS proxy pattern contract.
+// eip1822WithTransaction checks whether a UUPS proxy
+// pattern contract is deployed for a given transaction.
 func (s *Server) eip1822WithTransaction(tx *types.Transaction) (common.Address, error) {
 	ca, err := contractAddress(tx)
 	if err != nil {
@@ -25,8 +25,8 @@ func (s *Server) eip1822WithTransaction(tx *types.Transaction) (common.Address, 
 	return s.eip1822(ca)
 }
 
-// eip1822 checks to see if the given contract address
-// is a UUPS proxy pattern contract.
+// eip1822 checks the given contract address is a UUPS
+// proxy pattern contract.
 func (s *Server) eip1822(ca common.Address) (common.Address, error) {
 	// keccak256("PROXIABLE")
 	impl, err := s.eth.StorageAt(context.Background(), ca, common.HexToHash(params.LogicAddressSlotEIP1822), nil)
@@ -41,8 +41,9 @@ func (s *Server) eip1822(ca common.Address) (common.Address, error) {
 	return common.BytesToAddress(impl), nil
 }
 
-// eip1967WithTransaction checks to see if the given
-// transaction is a Transparent proxy pattern.
+// eip1967WithTransaction checks whether a Transparent
+// proxy pattern contract is deployed for a given
+// transaction.
 func (s *Server) eip1967WithTransaction(tx *types.Transaction) (common.Address, common.Address, error) {
 	ca, err := contractAddress(tx)
 	if err != nil {
@@ -51,8 +52,8 @@ func (s *Server) eip1967WithTransaction(tx *types.Transaction) (common.Address, 
 	return s.eip1967(ca)
 }
 
-// eip1967 checks to see if the given contract address
-// is a Transparent proxy pattern.
+// eip1967 checks the given contract address is a
+// Transparent proxy pattern.
 func (s *Server) eip1967(ca common.Address) (common.Address, common.Address, error) {
 	admin, err := s.eth.StorageAt(context.Background(), ca, common.HexToHash(params.AdminAddressSlotEIP1967), nil)
 	if err != nil {

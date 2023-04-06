@@ -15,3 +15,7 @@ type Solo struct {
 	database.Database
 	checkpoint.CheckpointHandler
 }
+
+func NewSoloEngine(local net.Addr, db database.Database, cp checkpoint.CheckpointHandler) (Engine, error) {
+	return &Solo{local, db, cp}, nil
+}

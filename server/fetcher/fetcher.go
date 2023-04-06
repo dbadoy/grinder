@@ -31,7 +31,7 @@ func New(client ethclient.Client, cp checkpoint.CheckpointReader, cfg *Config) *
 		eth:  client,
 		cp:   cp,
 		C:    make(chan *types.Block),
-		quit: make(chan struct{}, 1),
+		quit: make(chan struct{}),
 		cfg:  cfg,
 	}
 }
@@ -42,6 +42,7 @@ func (f *Fetcher) Run() {
 
 func (f *Fetcher) Stop() {
 	f.quit <- struct{}{}
+	f.quit = make(chan struct{})
 }
 
 // subscribe subscribes to events for new blocks. If the target

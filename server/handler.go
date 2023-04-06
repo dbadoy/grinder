@@ -22,11 +22,14 @@ func (s *Server) handleTransactions(txs types.Transactions) (err error) {
 			// Revert; occur database error.
 			for _, task := range s.journals {
 				// If a database error occurs, the delete request will likely
-				// fail as well, but it doesn't seem to be critical.
+				// fail as well.
+				//
+				// TODO(dbadoy): We can leave it as a file and perform the
+				// Revert when the server is restarted after the DB is
+				// recovered.
 				task.Revert(s.engine)
 			}
 		}
-
 		s.journals = make([]journalObject, 0)
 	}()
 
@@ -41,7 +44,6 @@ func (s *Server) handleTransactions(txs types.Transactions) (err error) {
 		/*
 			Additional logics
 		*/
-
 	}
 
 	return nil

@@ -95,6 +95,10 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 		if err != nil {
 			// Proxy pattern allows different contracts to point to the
 			// same implementation contract, so we ignores 'ErrAlreadyExist'.
+			//
+			// This data is saved from a previous request and should not be
+			// reverted if the request fails. Skip without appending to the
+			// 'journals'.
 			if errors.Is(err, database.ErrAlreadyExist) {
 				continue
 			}

@@ -8,7 +8,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-func DeployContract(m *mock, bytecode []byte) (common.Address, error) {
+func DeployContract(m *Mock, bytecode []byte) (common.Address, error) {
 	nonce, err := m.c.NonceAt(context.Background(), m.addr, nil)
 	if err != nil {
 		return common.Address{}, err

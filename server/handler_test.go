@@ -41,8 +41,15 @@ func TestProcessContract(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := s.processContract(txs); err != nil {
-		t.Fatal(err)
+	for _, tx := range txs {
+		ca, err := contractAddress(tx)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if err := s.handleContract(tx.Hash(), ca); err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	meta := memdb.Get([]byte(ca.Hex())).(*dto.Contract)

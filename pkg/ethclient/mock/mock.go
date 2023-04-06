@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"math/big"
 
+	"github.com/dbadoy/grinder/params"
 	"github.com/dbadoy/grinder/pkg/ethclient"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -25,6 +26,11 @@ var (
 	chainID = big.NewInt(1337)
 
 	_ ethclient.Client = (*Mock)(nil)
+)
+
+var (
+	InitialContractEIP1822 = "0x0000000000000000000000000000000000000001"
+	InitialContractEIP1967 = "0x0000000000000000000000000000000000000002"
 )
 
 // Mock is an alternative client for writing test scripts for
@@ -64,6 +70,23 @@ func New(hexPriv string) (*Mock, error) {
 		address: {
 			Balance: balance,
 			Nonce:   1,
+		},
+
+		// Proxy pattern contract templates
+		common.HexToAddress(InitialContractEIP1822): {
+			Code:    []byte{1, 8, 2, 2},
+			Balance: new(big.Int),
+			Storage: map[common.Hash]common.Hash{
+				common.HexToHash(params.LogicAddressSlotEIP1822): common.HexToHash("0x00000000000000000000000000000000000000a1"),
+			},
+		},
+		common.HexToAddress(InitialContractEIP1967): {
+			Code:    []byte{1, 9, 6, 7},
+			Balance: new(big.Int),
+			Storage: map[common.Hash]common.Hash{
+				common.HexToHash(params.AdminAddressSlotEIP1967):          common.HexToHash("0x00000000000000000000000000000000000000a2"),
+				common.HexToHash(params.ImplementationAddressSlotEIP1967): common.HexToHash("0x00000000000000000000000000000000000000b2"),
+			},
 		},
 	}
 

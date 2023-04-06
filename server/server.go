@@ -29,7 +29,7 @@ func New(eth ethclient.Client, fetcher *fetcher.Fetcher, engine cft.Engine, cp c
 		engine:  engine,
 		eth:     eth,
 		fetcher: fetcher,
-		quit:    make(chan struct{}, 1),
+		quit:    make(chan struct{}),
 		cfg:     cfg,
 	}, nil
 }
@@ -42,6 +42,7 @@ func (s *Server) Run() {
 func (s *Server) Stop() {
 	s.fetcher.Stop()
 	s.quit <- struct{}{}
+	s.quit = make(chan struct{})
 }
 
 func (s *Server) EthClient() ethclient.Client {
@@ -52,4 +53,18 @@ func (s *Server) Checkpoint() checkpoint.CheckpointReader {
 	return s.cp
 }
 
-func (s *Server) loop() {}
+func (s *Server) loop() {
+	for {
+		select {
+		case block := <-s.fetcher.C:
+			if s.engine.Checkpoint()+1 == block.NumberU64() {
+				if err := s.handleBlock(block); err == nil {
+					s.engine.Increase()
+				}
+			}
+
+		case <-s.quit:
+			return
+		}
+	}
+}

@@ -16,7 +16,20 @@ func (s *Server) handleBlock(block *types.Block) error {
 	return s.handleTransactions(block.Transactions())
 }
 
-func (s *Server) handleTransactions(txs types.Transactions) error {
+func (s *Server) handleTransactions(txs types.Transactions) (err error) {
+	defer func() {
+		if err != nil && len(s.journals) != 0 {
+			// Revert; occur database error.
+			for _, task := range s.journals {
+				// If a database error occurs, the delete request will likely
+				// fail as well, but it doesn't seem to be critical.
+				task.Revert(s.engine)
+			}
+		}
+
+		s.journals = make([]journalObject, 0)
+	}()
+
 	for _, tx := range txs {
 		if ca, err := contractAddress(tx); err == nil {
 			// Do handleContract if it is a deployment transaction.
@@ -36,9 +49,7 @@ func (s *Server) handleTransactions(txs types.Transactions) error {
 
 func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 	var (
-		journal = make([][]byte, 0)
-		except  = make(map[interface{}]struct{})
-		cas     = make([]common.Address, 1)
+		cas = make([]common.Address, 1)
 	)
 
 	// tx.Data also contains initialization code that will never
@@ -83,24 +94,13 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 			// Proxy pattern allows different contracts to point to the
 			// same implementation contract, so we ignores 'ErrAlreadyExist'.
 			if errors.Is(err, database.ErrAlreadyExist) {
-				// This data is saved from a previous request and should not
-				// be deleted even if the request fails.
-				except[addr.Bytes()] = struct{}{}
 				continue
 			}
 
-			// Revert; occur database error.
-			for _, task := range journal {
-				// If a database error occurs, the delete request will likely
-				// fail as well, but it doesn't seem to be critical.
-				if _, excepted := except[task]; !excepted {
-					s.engine.Delete(task)
-				}
-			}
 			return fmt.Errorf("request failed in database: %v", err)
 		}
 
-		journal = append(journal, addr.Bytes())
+		s.journals = append(s.journals, &insertContract{addr.Bytes()})
 	}
 
 	return nil

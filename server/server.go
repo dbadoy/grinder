@@ -14,6 +14,9 @@ type Server struct {
 
 	fetcher *fetcher.Fetcher
 
+	// cache
+	journals []journalObject
+
 	// main loop
 	quit chan struct{}
 
@@ -26,11 +29,12 @@ func New(eth ethclient.Client, fetcher *fetcher.Fetcher, engine cft.Engine, cp c
 	}
 
 	return &Server{
-		engine:  engine,
-		eth:     eth,
-		fetcher: fetcher,
-		quit:    make(chan struct{}),
-		cfg:     cfg,
+		engine:   engine,
+		eth:      eth,
+		fetcher:  fetcher,
+		journals: make([]journalObject, 0),
+		quit:     make(chan struct{}),
+		cfg:      cfg,
 	}, nil
 }
 

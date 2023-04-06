@@ -41,12 +41,12 @@ func (s *Server) processContract(txs types.Transactions) error {
 
 		if s.cfg.AllowProxyContract {
 			// == Transparent Proxy
-			if admin, impl, err := s.eip1967(tx); err == nil {
+			if admin, impl, err := s.eip1967WithTransaction(tx); err == nil {
 				cas = append(cas, admin, impl)
 			}
 
 			// == UUPS Proxy
-			if logic, err := s.eip1822(tx); err == nil {
+			if logic, err := s.eip1822WithTransaction(tx); err == nil {
 				cas = append(cas, logic)
 			}
 		}

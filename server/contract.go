@@ -19,13 +19,39 @@ func (s *Server) deployTransaction(tx *types.Transaction) (common.Address, error
 	return contractAddress(tx)
 }
 
-// Transparent proxy pattern
-func (s *Server) eip1967(tx *types.Transaction) (common.Address, common.Address, error) {
+func (s *Server) eip1822WithTransaction(tx *types.Transaction) (common.Address, error) {
+	ca, err := contractAddress(tx)
+	if err != nil {
+		return common.Address{}, err
+	}
+	return s.eip1822(ca)
+}
+
+// UUPS proxy pattern
+func (s *Server) eip1822(ca common.Address) (common.Address, error) {
+	// keccak256("PROXIABLE")
+	impl, err := s.eth.StorageAt(context.Background(), ca, common.HexToHash(params.LogicAddressSlotEIP1822), nil)
+	if err != nil {
+		return common.Address{}, err
+	}
+
+	if bytes.Equal(impl, emptySlot) {
+		return common.Address{}, errors.New("empty eip1822 logic contract address slot")
+	}
+
+	return common.BytesToAddress(impl), nil
+}
+
+func (s *Server) eip1967WithTransaction(tx *types.Transaction) (common.Address, common.Address, error) {
 	ca, err := contractAddress(tx)
 	if err != nil {
 		return common.Address{}, common.Address{}, err
 	}
+	return s.eip1967(ca)
+}
 
+// Transparent proxy pattern
+func (s *Server) eip1967(ca common.Address) (common.Address, common.Address, error) {
 	admin, err := s.eth.StorageAt(context.Background(), ca, common.HexToHash(params.AdminAddressSlotEIP1967), nil)
 	if err != nil {
 		return common.Address{}, common.Address{}, err
@@ -41,26 +67,6 @@ func (s *Server) eip1967(tx *types.Transaction) (common.Address, common.Address,
 	}
 
 	return common.BytesToAddress(admin), common.BytesToAddress(impl), nil
-}
-
-// UUPS proxy pattern
-func (s *Server) eip1822(tx *types.Transaction) (common.Address, error) {
-	ca, err := contractAddress(tx)
-	if err != nil {
-		return common.Address{}, err
-	}
-
-	// keccak256("PROXIABLE")
-	impl, err := s.eth.StorageAt(context.Background(), ca, common.HexToHash(params.LogicAddressSlotEIP1822), nil)
-	if err != nil {
-		return common.Address{}, err
-	}
-
-	if bytes.Equal(impl, emptySlot) {
-		return common.Address{}, errors.New("empty eip1822 logic contract address slot")
-	}
-
-	return common.BytesToAddress(impl), nil
 }
 
 func contractAddress(tx *types.Transaction) (common.Address, error) {

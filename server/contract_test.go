@@ -41,7 +41,8 @@ func TestContractHandle(t *testing.T) {
 			blockNumber = i + 1
 			bytecode    = common.Hex2Bytes(elem.bytecode)
 		)
-		if _, err := mock.DeployContract(client, bytecode); err != nil {
+		ca, err := mock.DeployContract(client, bytecode)
+		if err != nil {
 			t.Fatal(err)
 		}
 
@@ -54,11 +55,11 @@ func TestContractHandle(t *testing.T) {
 			t.Fatalf("TestContractHandle - deploy transaction, want: success got: failed (%v)", err)
 		}
 
-		if _, err := s.eip1822(txs[0]); err != nil && elem.eip1822 {
+		if _, err := s.eip1822(ca); err != nil && elem.eip1822 {
 			t.Fatalf("TestContractHandle - eip1822, want: success got: failed (%v)", err)
 		}
 
-		if _, _, err := s.eip1967(txs[0]); err != nil && elem.eip1967 {
+		if _, _, err := s.eip1967(ca); err != nil && elem.eip1967 {
 			t.Fatalf("TestContractHandle - eip1967, want: success got: failed (%v)", err)
 		}
 	}

@@ -38,7 +38,7 @@ func TestSubscribeFetcherRealTime(t *testing.T) {
 	fetcher.Run()
 
 	for i := 1; i <= 10; i++ {
-		c.Core().Commit()
+		c.Backend().Commit()
 		time.Sleep(100 * time.Millisecond)
 
 		if len(mined) != i {
@@ -75,14 +75,14 @@ func TestSubscribeFetcherRecover(t *testing.T) {
 	want := 10
 
 	for i := 1; i <= want; i++ {
-		c.Core().Commit()
+		c.Backend().Commit()
 	}
 
 	fetcher.Run()
 
 	// If the fetcher starts, and the next block is not created,
 	// recover is not automatically performed.
-	c.Core().Commit()
+	c.Backend().Commit()
 
 	time.Sleep(1 * time.Second)
 
@@ -118,7 +118,7 @@ func TestPollingFetcherRealTime(t *testing.T) {
 	fetcher.Run()
 
 	for i := 1; i <= 10; i++ {
-		c.Core().Commit()
+		c.Backend().Commit()
 		time.Sleep(100 * time.Millisecond)
 
 		if len(mined) != i {
@@ -154,7 +154,7 @@ func TestPollingFetcherRecover(t *testing.T) {
 	want := 10
 
 	for i := 1; i <= want; i++ {
-		c.Core().Commit()
+		c.Backend().Commit()
 	}
 
 	fetcher.Run()

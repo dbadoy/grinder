@@ -8,6 +8,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+// DeployContract is a template method for how to use
+// backends.SimulatedBackend.
+//
+// It is describing the overall steps of 'sending a transaction
+// - creating a block - getting a receipt' process well.
 func DeployContract(m *Mock, bytecode []byte) (common.Address, error) {
 	nonce, err := m.c.NonceAt(context.Background(), m.addr, nil)
 	if err != nil {

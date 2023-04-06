@@ -27,12 +27,21 @@ var (
 	_ ethclient.Client = (*Mock)(nil)
 )
 
+// Mock is an alternative client for writing test scripts for
+// the logic of communicating with the Ethereum client. We can
+// send transactions and mine blocks through Mock, and it
+// provides all the functionality of the ethclient.Client
+// interface(in grinder, not go-ethereum), making it easy to
+// write tests.
 type Mock struct {
 	c *backends.SimulatedBackend
 
 	addr common.Address
 	priv *ecdsa.PrivateKey
 
+	// We need to be able to turn this option on and off, because
+	// the branching of operations depends on whether Fetcher
+	// supports the subscription feature.
 	SupportSubscribe bool
 }
 
@@ -48,8 +57,9 @@ func New(hexPriv string) (*Mock, error) {
 	}
 
 	address := auth.From
-	balance, _ := new(big.Int).SetString("10000000000000000000", 10) // 10 eth in wei
+	balance, _ := new(big.Int).SetString("10000000000000000000", 10) // 10 eth
 
+	// pre-allocate
 	genesisAlloc := map[common.Address]core.GenesisAccount{
 		address: {
 			Balance: balance,
@@ -66,6 +76,9 @@ func New(hexPriv string) (*Mock, error) {
 	}, nil
 }
 
+// Backend returns backends.SimulatedBackend, which allows
+// detailed operations on the temporary blockchain (e.g.
+// block creation, StateDB fetching).
 func (m *Mock) Backend() *backends.SimulatedBackend {
 	return m.c
 }

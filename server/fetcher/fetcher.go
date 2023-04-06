@@ -103,7 +103,7 @@ func (f *Fetcher) polling(interval time.Duration) {
 // 		- Asynchronous, data recovery between Checkpoint and BN
 //
 // 4. BN < Checkpoint
-//		- Critical error ( need to consider reconfiguration)
+//		- Critical error (need to consider reconfiguration)
 func (f *Fetcher) handle(latest uint64) {
 	if latest == f.cp.Checkpoint() {
 		return

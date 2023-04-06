@@ -72,7 +72,6 @@ func TestSubscribeFetcherRecover(t *testing.T) {
 		}
 	}()
 
-	//
 	want := 10
 
 	for i := 1; i <= want; i++ {

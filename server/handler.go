@@ -25,7 +25,6 @@ func (s *Server) processContract(txs types.Transactions) error {
 		if err != nil {
 			continue
 		}
-		fmt.Println("dectect CA")
 
 		var (
 			journal = make([][]byte, 0)

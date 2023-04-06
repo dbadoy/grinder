@@ -66,7 +66,7 @@ func New(hexPriv string) (*Mock, error) {
 	}, nil
 }
 
-func (m *Mock) Core() *backends.SimulatedBackend {
+func (m *Mock) Backend() *backends.SimulatedBackend {
 	return m.c
 }
 

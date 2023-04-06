@@ -11,12 +11,26 @@ import (
 )
 
 type Config struct {
+	// PollInterval is the interval for polling that is performed if the
+	// node does not support subscriptions. If it does support
+	// subscriptions, this value is not used.
 	PollInterval time.Duration
 }
 
+// Fetcher detects block generation, compares the block height on
+// the blockchain with the checkpoint caller provide, and either
+// forwards the block or performs a recovery process.
 type Fetcher struct {
 	eth ethclient.Client
-	cp  checkpoint.CheckpointReader
+
+	// cp only serves to return the last block number received by
+	// the caller. Fetcher does not increment the checkpoint
+	// directly to know that it has been 'passed', but rather after
+	// the caller has received the block.
+	//
+	// note: See Server.loop() in server/server.go to see how it is
+	// handled by the caller.
+	cp checkpoint.CheckpointReader
 
 	C    chan *types.Block
 	quit chan struct{}
@@ -25,8 +39,9 @@ type Fetcher struct {
 }
 
 func New(client ethclient.Client, cp checkpoint.CheckpointReader, cfg *Config) *Fetcher {
-	// redgla
-	//
+	// TODO(dbadoy): Consider scaling out(e.g. redgla) in case we
+	// need to perform recovery operations on many blocks.
+
 	return &Fetcher{
 		eth:  client,
 		cp:   cp,

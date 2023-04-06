@@ -50,7 +50,7 @@ func TestContractHandle(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		if _, err := s.deployTransaction(txs[0]); err != nil && elem.isDeployTx {
+		if _, err := contractAddress(txs[0]); err != nil && elem.isDeployTx {
 			t.Fatalf("TestContractHandle - deploy transaction, want: success got: failed (%v)", err)
 		}
 

@@ -21,7 +21,7 @@ func (s *Server) handleBlock(block *types.Block) error {
 
 func (s *Server) processContract(txs types.Transactions) error {
 	for _, tx := range txs {
-		ca, err := s.deployTransaction(tx)
+		ca, err := contractAddress(tx)
 		if err != nil {
 			continue
 		}

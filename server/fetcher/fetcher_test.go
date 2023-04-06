@@ -96,6 +96,7 @@ func TestPollingFetcherRealTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	c.SupportSubscribe = false
 
 	cp := checkpoint.New(checkpoint.DefaultBasePath, "fetcher")
 	defer func() {
@@ -132,6 +133,7 @@ func TestPollingFetcherRecover(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	c.SupportSubscribe = false
 
 	cp := checkpoint.New(checkpoint.DefaultBasePath, "fetcher")
 	defer func() {

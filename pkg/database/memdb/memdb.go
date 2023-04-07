@@ -21,9 +21,18 @@ func New() *MemoryDB {
 func (m *MemoryDB) Get(key []byte) database.Data {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	
 	return m.v[string(key)]
 }
 
+func (m *MemoryDB) Size() int {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	return len(m.v)
+}
+
+// database.Database
 func (m *MemoryDB) HealthCheck() error {
 	return nil
 }

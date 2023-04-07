@@ -106,7 +106,7 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 			return fmt.Errorf("request failed in database: %v", err)
 		}
 
-		s.journals = append(s.journals, &insertContract{addr.Bytes()})
+		s.journals = append(s.journals, &insertContract{[]byte(addr.Hex())})
 	}
 
 	return nil

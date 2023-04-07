@@ -19,7 +19,7 @@ func (s *Server) handleBlock(block *types.Block) error {
 func (s *Server) handleTransactions(txs types.Transactions) (err error) {
 	defer func() {
 		if err != nil && len(s.journals) != 0 {
-			// Revert; occur database error.
+			// Revert; Errors during operations on transactions in a block.
 			for _, task := range s.journals {
 				// If a database error occurs, the delete request will likely
 				// fail as well.

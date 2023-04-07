@@ -14,7 +14,6 @@ type Server struct {
 
 	fetcher *fetcher.Fetcher
 
-	// cache
 	journals []journalObject
 
 	// main loop

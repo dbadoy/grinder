@@ -27,7 +27,7 @@ func (s *Server) handleTransactions(txs types.Transactions) (err error) {
 				// TODO(dbadoy): We can leave it as a file and perform the
 				// Revert when the server is restarted after the DB is
 				// recovered.
-				task.Revert(s.engine)
+				task.revert(s.engine)
 			}
 		}
 		s.journals = make([]journalObject, 0)

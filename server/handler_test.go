@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func TestProcessContract(t *testing.T) {
+func TestHandleContract(t *testing.T) {
 	client, err := mock.New(mock.DefaultPrivateKey)
 	if err != nil {
 		t.Fatal(err)

@@ -12,17 +12,17 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-func (s *Server) handleBlock(block *types.Block) error {
-	return s.handleTransactions(block.Transactions())
-}
-
-func (s *Server) handleTransactions(txs types.Transactions) (err error) {
+func (s *Server) handleBlock(block *types.Block) (err error) {
 	defer func() {
 		if err != nil {
 			s.revert()
 		}
 	}()
 
+	return s.handleTransactions(block.Transactions())
+}
+
+func (s *Server) handleTransactions(txs types.Transactions) (err error) {
 	for _, tx := range txs {
 		if ca, err := contractAddress(tx); err == nil {
 			// Do handleContract if it is a deployment transaction.
@@ -112,7 +112,7 @@ func (s *Server) handleRequest(req Request) {
 
 	case contractRequestType:
 		contract := req.(*ContractRequest)
-		err = s.handleContract(common.Hash{}, contract.Address)
+		err = s.handleContract(common.Hash{} /* TODO */, contract.Address)
 
 	default:
 		err = errors.New("invalid request")
@@ -120,8 +120,9 @@ func (s *Server) handleRequest(req Request) {
 
 	if err != nil {
 		s.revert()
-		req.Errorc() <- err
 	}
+
+	req.Errorc() <- err
 }
 
 // revert performs a revert to a previous state if an

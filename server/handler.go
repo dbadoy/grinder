@@ -103,6 +103,10 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 }
 
 func (s *Server) handleRequest(req request) {
+	if req.Errorc() == nil {
+		panic("bad Server.request: empty error channel")
+	}
+
 	var err error
 
 	switch req.Kind() {

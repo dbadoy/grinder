@@ -111,3 +111,21 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 
 	return nil
 }
+
+func (s *Server) handleRequest(req Request) {
+	var err error
+
+	switch req.Kind() {
+	case abiRequestType:
+		//
+	case contractRequestType:
+		//
+
+	default:
+		err = errors.New("invalid request")
+	}
+
+	if err != nil {
+		req.Errorc() <- err
+	}
+}

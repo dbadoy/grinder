@@ -63,6 +63,7 @@ func (s *Server) EthClient() ethclient.Client {
 func (s *Server) Checkpoint() checkpoint.CheckpointReader {
 	return s.cp
 }
+
 func (s *Server) AddABI(req *ABIRequest) error {
 	req.errc = make(chan error)
 	select {

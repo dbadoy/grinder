@@ -63,19 +63,6 @@ func (s *Server) EthClient() ethclient.Client {
 func (s *Server) Checkpoint() checkpoint.CheckpointReader {
 	return s.cp
 }
-
-func (s *Server) MustAddABI(req *ABIRequest) error {
-	req.errc = make(chan error)
-	s.req <- req
-	return <-req.errc
-}
-
-func (s *Server) MustAddContract(req *ContractRequest) error {
-	req.errc = make(chan error)
-	s.req <- req
-	return <-req.errc
-}
-
 func (s *Server) AddABI(req *ABIRequest) error {
 	req.errc = make(chan error)
 	select {
@@ -86,6 +73,12 @@ func (s *Server) AddABI(req *ABIRequest) error {
 	}
 }
 
+func (s *Server) AddABISync(req *ABIRequest) error {
+	req.errc = make(chan error)
+	s.req <- req
+	return <-req.errc
+}
+
 func (s *Server) AddContract(req *ContractRequest) error {
 	req.errc = make(chan error)
 	select {
@@ -94,6 +87,12 @@ func (s *Server) AddContract(req *ContractRequest) error {
 	default:
 		return ErrServerTooBusy
 	}
+}
+
+func (s *Server) AddContractSync(req *ContractRequest) error {
+	req.errc = make(chan error)
+	s.req <- req
+	return <-req.errc
 }
 
 func (s *Server) loop() {

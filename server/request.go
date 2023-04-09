@@ -10,7 +10,11 @@ const (
 	contractRequestType
 )
 
-type Request interface {
+var (
+	_, _ request = (*ABIRequest)(nil), (*ContractRequest)(nil)
+)
+
+type request interface {
 	Errorc() chan<- error
 	Kind() byte
 }

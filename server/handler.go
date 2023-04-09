@@ -102,7 +102,7 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 	return nil
 }
 
-func (s *Server) handleRequest(req Request) {
+func (s *Server) handleRequest(req request) {
 	var err error
 
 	switch req.Kind() {

@@ -23,7 +23,7 @@ type Server struct {
 	journals []journalObject
 
 	// main loop
-	req  chan Request
+	req  chan request
 	quit chan struct{}
 
 	cfg *Config
@@ -39,7 +39,7 @@ func New(eth ethclient.Client, fetcher *fetcher.Fetcher, engine cft.Engine, cp c
 		eth:      eth,
 		fetcher:  fetcher,
 		journals: make([]journalObject, 0),
-		req:      make(chan Request),
+		req:      make(chan request),
 		quit:     make(chan struct{}),
 		cfg:      cfg,
 	}, nil

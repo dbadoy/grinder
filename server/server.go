@@ -1,10 +1,16 @@
 package server
 
 import (
+	"errors"
+
 	"github.com/dbadoy/grinder/pkg/checkpoint"
 	"github.com/dbadoy/grinder/pkg/ethclient"
 	"github.com/dbadoy/grinder/server/cft"
 	"github.com/dbadoy/grinder/server/fetcher"
+)
+
+var (
+	ErrServerTooBusy = errors.New("main loop is in a blocked state.")
 )
 
 type Server struct {
@@ -17,6 +23,7 @@ type Server struct {
 	journals []journalObject
 
 	// main loop
+	req  chan Request
 	quit chan struct{}
 
 	cfg *Config
@@ -56,6 +63,38 @@ func (s *Server) Checkpoint() checkpoint.CheckpointReader {
 	return s.cp
 }
 
+func (s *Server) MustAddABI(req *ABIRequest) error {
+	req.errc = make(chan error)
+	s.req <- req
+	return <-req.errc
+}
+
+func (s *Server) MustAddContract(req *ContractRequest) error {
+	req.errc = make(chan error)
+	s.req <- req
+	return <-req.errc
+}
+
+func (s *Server) AddABI(req *ABIRequest) error {
+	req.errc = make(chan error)
+	select {
+	case s.req <- req:
+		return <-req.errc
+	default:
+		return ErrServerTooBusy
+	}
+}
+
+func (s *Server) AddContract(req *ContractRequest) error {
+	req.errc = make(chan error)
+	select {
+	case s.req <- req:
+		return <-req.errc
+	default:
+		return ErrServerTooBusy
+	}
+}
+
 func (s *Server) loop() {
 	for {
 		select {
@@ -65,6 +104,9 @@ func (s *Server) loop() {
 					s.engine.Increase()
 				}
 			}
+
+		case req := <-s.req:
+			s.handleRequest(req)
 
 		case <-s.quit:
 			return

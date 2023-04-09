@@ -90,7 +90,7 @@ func TestMustAddABI(t *testing.T) {
 	}
 
 	go func() {
-		if err := s.MustAddABI(&ABIRequest{Name: "test", ABI: input}); err != nil {
+		if err := s.AddABISync(&ABIRequest{Name: "test", ABI: input}); err != nil {
 			panic(err)
 		}
 
@@ -180,7 +180,7 @@ func TestMustAddContract(t *testing.T) {
 	}
 
 	go func() {
-		if err := s.MustAddContract(&ContractRequest{Address: ca}); err != nil {
+		if err := s.AddContractSync(&ContractRequest{Address: ca}); err != nil {
 			panic(err)
 		}
 

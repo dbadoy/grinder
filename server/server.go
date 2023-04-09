@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrServerTooBusy = errors.New("main loop is in a blocked state.")
+	ErrServerTooBusy = errors.New("main loop is in a blocked state")
 )
 
 type Server struct {

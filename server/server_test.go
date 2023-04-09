@@ -64,7 +64,7 @@ func TestAddABI(t *testing.T) {
 	}
 }
 
-func TestMustAddABI(t *testing.T) {
+func TestAddABISync(t *testing.T) {
 	client, err := mock.New(mock.DefaultPrivateKey)
 	if err != nil {
 		t.Fatal(err)
@@ -152,7 +152,7 @@ func TestAddContract(t *testing.T) {
 	}
 }
 
-func TestMustAddContract(t *testing.T) {
+func TestAddContractSync(t *testing.T) {
 	client, err := mock.New(mock.DefaultPrivateKey)
 	if err != nil {
 		t.Fatal(err)

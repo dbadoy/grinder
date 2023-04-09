@@ -39,6 +39,7 @@ func New(eth ethclient.Client, fetcher *fetcher.Fetcher, engine cft.Engine, cp c
 		eth:      eth,
 		fetcher:  fetcher,
 		journals: make([]journalObject, 0),
+		req:      make(chan Request),
 		quit:     make(chan struct{}),
 		cfg:      cfg,
 	}, nil

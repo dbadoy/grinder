@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	abiRequestType = 0x01 + iota
+	abiRequestType = byte(1) + iota
 	contractRequestType
 )
 

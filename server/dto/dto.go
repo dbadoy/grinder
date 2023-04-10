@@ -6,5 +6,5 @@ var (
 	_ database.Data = (*Contract)(nil)
 	_ database.Data = (*ABI)(nil)
 
-	Indices = []string{Contract{}.Index(), ABI{}.Index()}
+	Indices = []string{new(Contract).Index(), new(ABI).Index()}
 )

@@ -12,27 +12,17 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
-func (s *Server) handleBlock(block *types.Block) error {
+func (s *Server) handleBlock(block *types.Block) (err error) {
+	defer func() {
+		if err != nil {
+			s.revert()
+		}
+	}()
+
 	return s.handleTransactions(block.Transactions())
 }
 
 func (s *Server) handleTransactions(txs types.Transactions) (err error) {
-	defer func() {
-		if err != nil && len(s.journals) != 0 {
-			// Revert; Errors during operations on transactions in a block.
-			for _, task := range s.journals {
-				// If a database error occurs, the delete request will likely
-				// fail as well.
-				//
-				// TODO(dbadoy): We can leave it as a file and perform the
-				// Revert when the server is restarted after the DB is
-				// recovered.
-				task.revert(s.engine)
-			}
-		}
-		s.journals = make([]journalObject, 0)
-	}()
-
 	for _, tx := range txs {
 		if ca, err := contractAddress(tx); err == nil {
 			// Do handleContract if it is a deployment transaction.
@@ -110,4 +100,50 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 	}
 
 	return nil
+}
+
+func (s *Server) handleRequest(req request) {
+	if req.Errorc() == nil {
+		panic("bad Server.request: empty error channel")
+	}
+
+	var err error
+
+	switch req.Kind() {
+	case abiRequestType:
+		abi := req.(*ABIRequest)
+		err = s.engine.Insert([]byte(abi.Name), abi.ABI)
+
+	case contractRequestType:
+		contract := req.(*ContractRequest)
+		err = s.handleContract(common.Hash{} /* TODO */, contract.Address)
+
+	default:
+		err = errors.New("invalid request")
+	}
+
+	if err != nil {
+		s.revert()
+	}
+
+	req.Errorc() <- err
+}
+
+// revert performs a revert to a previous state if an
+// intermediate failure occurs when making multiple
+// requests to the engine within a single request.
+func (s *Server) revert() {
+	for _, task := range s.journals {
+		// If a database error occurs, the delete request will likely
+		// fail as well.
+		//
+		// TODO(dbadoy): We can leave it as a file and perform the
+		// Revert when the server is restarted after the DB is
+		// recovered.
+		task.revert(s.engine)
+	}
+
+	if len(s.journals) != 0 {
+		s.journals = make([]journalObject, 0)
+	}
 }

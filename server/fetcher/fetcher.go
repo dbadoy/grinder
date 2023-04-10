@@ -2,12 +2,14 @@ package fetcher
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/dbadoy/grinder/pkg/checkpoint"
 	"github.com/dbadoy/grinder/pkg/ethclient"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/rpc"
 )
 
 type Config struct {
@@ -79,6 +81,15 @@ func (f *Fetcher) subscribe() {
 				return
 			}
 		}
+	}
+
+	// Errors other than ErrNotificationsUnsupported may also
+	// occur. This is an abnormal behavior of the client itself,
+	// so there is no reason to keep it running.
+	//
+	// https://github.com/ethereum/go-ethereum/pull/25942
+	if !errors.Is(err, rpc.ErrNotificationsUnsupported) {
+		panic(fmt.Errorf("abnormal ethereum client in Fetcher: %v", err))
 	}
 
 	close(ch)

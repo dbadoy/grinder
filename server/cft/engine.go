@@ -1,6 +1,10 @@
 package cft
 
-import "github.com/dbadoy/grinder/pkg/database"
+import (
+	"net"
+
+	"github.com/dbadoy/grinder/pkg/database"
+)
 
 type Engine interface {
 	// Database
@@ -14,9 +18,14 @@ type Engine interface {
 	SetCheckpoint(uint64) error
 	Increase() error
 	Decrease() error
-
-	// CFT handle
 }
 
 type server interface {
+	HasLeaderPermissions() bool
+
+	LocalNode() net.Addr
+
+	ClusterLeader() net.Addr
+
+	CommitCheckpoint(uint64) error
 }

@@ -72,7 +72,7 @@ func TestEIP1822(t *testing.T) {
 
 	s := &Server{eth: client}
 
-	if _, err := s.eip1822(common.HexToAddress(mock.InitialContractEIP1822)); err != nil {
+	if _, err := s.eip1822(common.HexToAddress(mock.PrecompiledContractEIP1822)); err != nil {
 		t.Fatalf("TestEIP1822, want: sucess got: failed (%v)", err)
 	}
 }
@@ -85,7 +85,7 @@ func TestEIP1967(t *testing.T) {
 
 	s := &Server{eth: client}
 
-	if _, _, err := s.eip1967(common.HexToAddress(mock.InitialContractEIP1967)); err != nil {
+	if _, _, err := s.eip1967(common.HexToAddress(mock.PrecompiledContractEIP1967)); err != nil {
 		t.Fatalf("TestEIP1967, want: sucess got: failed (%v)", err)
 	}
 }

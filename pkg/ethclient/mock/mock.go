@@ -29,8 +29,8 @@ var (
 )
 
 var (
-	InitialContractEIP1822 = "0x0000000000000000000000000000000000000001"
-	InitialContractEIP1967 = "0x0000000000000000000000000000000000000002"
+	PrecompiledContractEIP1822 = "0x0000000000000000000000000000000000000001"
+	PrecompiledContractEIP1967 = "0x0000000000000000000000000000000000000002"
 )
 
 // Mock is an alternative client for writing test scripts for
@@ -73,14 +73,14 @@ func New(hexPriv string) (*Mock, error) {
 		},
 
 		// Proxy pattern contract templates
-		common.HexToAddress(InitialContractEIP1822): {
+		common.HexToAddress(PrecompiledContractEIP1822): {
 			Code:    []byte{1, 8, 2, 2},
 			Balance: new(big.Int),
 			Storage: map[common.Hash]common.Hash{
 				common.HexToHash(params.LogicAddressSlotEIP1822): common.HexToHash("0x00000000000000000000000000000000000000a1"),
 			},
 		},
-		common.HexToAddress(InitialContractEIP1967): {
+		common.HexToAddress(PrecompiledContractEIP1967): {
 			Code:    []byte{1, 9, 6, 7},
 			Balance: new(big.Int),
 			Storage: map[common.Hash]common.Hash{

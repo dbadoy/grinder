@@ -1,9 +1,13 @@
 package p2p
 
 import (
-	"errors"
 	"net"
 	"time"
+)
+
+const (
+	maxPacketSize      = 128
+	defaultReadTimeout = time.Second
 )
 
 type connection struct {
@@ -20,7 +24,7 @@ func (c *connection) writeMsg(msg msg) error {
 }
 
 func (c *connection) readMsg() (msg, error) {
-	b := make([]byte, 128)
+	b := make([]byte, maxPacketSize)
 	n, err := c.conn.Read(b)
 	if err != nil {
 		return nil, err
@@ -29,36 +33,23 @@ func (c *connection) readMsg() (msg, error) {
 }
 
 func (c *connection) readMsgWithTimeout(timeout time.Duration) (msg, error) {
-	timer := time.NewTimer(timeout)
-	defer timer.Stop()
-
-	recv := make(chan msg, 1)
-	go func() {
-		msg, err := c.readMsg()
-		if err != nil {
-			return
-		}
-		recv <- msg
-	}()
-
-	for {
-		select {
-		case msg := <-recv:
-			return msg, nil
-		case <-timer.C:
-			return nil, errors.New("timeout")
-		}
-	}
+	c.conn.SetReadDeadline(time.Now().Add(timeout))
+	return c.readMsg()
 }
 
 type peer struct {
-	conn   *connection
+	conn    *connection
+	handler *handler
+
 	closed chan struct{}
 }
 
 func (p *peer) run() {
 	go p.readLoop()
 	go p.pingLoop()
+
+	for {
+	}
 }
 
 func (p *peer) readLoop() {
@@ -68,7 +59,7 @@ func (p *peer) readLoop() {
 			return
 		}
 
-		_ = msg
+		p.handler.handleMsg(p, msg)
 	}
 }
 

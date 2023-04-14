@@ -13,10 +13,9 @@ var (
 )
 
 type CFT struct {
-	localnode net.Addr
-	srv       server
-	db        database.Database
-	cp        checkpoint.CheckpointHandler
+	srv server
+	db  database.Database
+	cp  checkpoint.CheckpointHandler
 }
 
 func (c *CFT) Insert(key []byte, data database.Data) error {

@@ -5,26 +5,24 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"time"
 )
-
-var handshakeTimeout = time.Second
 
 func (s *Server) doHandkshake(c net.Conn) (*peer, error) {
 	conn := &connection{c}
 
 	conn.writeMsg(&handshakeMsg{
-		ClusterCode: s.ClusterHash(),
+		ClusterCode: ClusterHash(s.cfg.Cluster),
 		Checkpoint:  s.cp.Checkpoint(),
 	})
 
-	msg, err := conn.readMsgWithTimeout(handshakeTimeout)
+	msg, err := conn.readMsgWithTimeout(defaultReadTimeout)
 	if err != nil {
 		return nil, err
 	}
 
 	ack := msg.(*ackMsg)
-	if !bytes.Equal(s.ClusterHash(), ack.ClusterCode) {
+
+	if !bytes.Equal(ClusterHash(s.cfg.Cluster), ack.ClusterCode) {
 		return nil, fmt.Errorf("has invalid cluster list: %s", c.RemoteAddr())
 	}
 
@@ -35,11 +33,11 @@ func (s *Server) doHandkshake(c net.Conn) (*peer, error) {
 	// start checkpoint sync.
 	if ack.Checkpoint > s.cp.Checkpoint() {
 		conn.writeMsg(&checkpointMsg{
-			ClusterCode: s.ClusterHash(),
+			ClusterCode: ClusterHash(s.cfg.Cluster),
 			Checkpoint:  s.cp.Checkpoint(),
 		})
 
-		msg, err := conn.readMsgWithTimeout(handshakeTimeout)
+		msg, err := conn.readMsgWithTimeout(defaultReadTimeout)
 		if err != nil {
 			return nil, err
 		}
@@ -51,7 +49,11 @@ func (s *Server) doHandkshake(c net.Conn) (*peer, error) {
 	}
 
 	return &peer{
-		conn:   conn,
+		conn: conn,
+		handler: &handler{
+			cp:  s.cp,
+			cfg: s.cfg,
+		},
 		closed: make(chan struct{}),
 	}, nil
 }

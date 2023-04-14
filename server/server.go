@@ -37,6 +37,7 @@ func New(eth ethclient.Client, fetcher *fetcher.Fetcher, engine cft.Engine, cp c
 	return &Server{
 		engine:   engine,
 		eth:      eth,
+		cp:       cp,
 		fetcher:  fetcher,
 		journals: make([]journalObject, 0),
 		req:      make(chan request),

@@ -31,9 +31,12 @@ func New(localnode *net.TCPAddr, cfg *Config) (*Server, error) {
 	return &Server{listener: listener}, nil
 }
 
-func (s *Server) loop() {}
+func (s *Server) Run() {
+	go s.loop()
+	go s.acceptLoop()
+}
 
-// func (s *Server) readLoop() {}
+func (s *Server) loop() {}
 
 func (s *Server) acceptLoop() {
 	for {
@@ -51,16 +54,24 @@ func (s *Server) acceptLoop() {
 }
 
 func (s *Server) setupConn(conn net.Conn) {
-	p, err := s.doHandkshake(conn)
+	peer, err := s.doHandkshake(conn)
 	if err != nil {
 		return
 	}
 
-	s.cohorts = append(s.cohorts, p)
+	go peer.run()
+
+	s.cohorts = append(s.cohorts, peer)
 }
 
-func (s *Server) ClusterHash() []byte {
+func (s *Server) broadcastMsg(msg msg) {
+	for _, cohort := range s.cohorts {
+		cohort.conn.writeMsg(msg)
+	}
+}
+
+func ClusterHash(cluster []string) []byte {
 	h := sha256.New()
-	h.Write([]byte(strings.Join(s.cfg.Cluster, "-")))
+	h.Write([]byte(strings.Join(cluster, "-")))
 	return h.Sum(nil)[:20]
 }

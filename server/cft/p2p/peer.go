@@ -47,9 +47,6 @@ type peer struct {
 func (p *peer) run() {
 	go p.readLoop()
 	go p.pingLoop()
-
-	for {
-	}
 }
 
 func (p *peer) readLoop() {

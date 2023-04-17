@@ -18,10 +18,15 @@ func Grinde(bytecode []byte) (methods []string, events []string, err error) {
 		return nil, nil, errors.New("must be contract")
 	}
 
-	for _, opcode := range getOpCodes([]byte(hex)) {
+	for _, opcode := range getOpCodes(bytecode) {
 		switch opcode.code {
 		case vm.PUSH4:
-			methods = append(methods, common.Bytes2Hex(opcode.value))
+			method := common.Bytes2Hex(opcode.value)
+			if method == "ffffffff" {
+				continue
+			}
+
+			methods = append(methods, method)
 		case vm.PUSH32:
 			events = append(events, common.Bytes2Hex(opcode.value))
 		}

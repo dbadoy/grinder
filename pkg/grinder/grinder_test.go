@@ -16,7 +16,7 @@ func TestGrinde(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if len(methods) != 16 && len(events) != 0 {
+	if len(methods) != 2 && len(events) != 7 {
 		t.Fatal("incorrect result")
 	}
 

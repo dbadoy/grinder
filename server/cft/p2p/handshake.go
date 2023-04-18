@@ -51,8 +51,9 @@ func (s *Server) doHandkshake(c net.Conn) (*peer, error) {
 	return &peer{
 		conn: conn,
 		handler: &handler{
-			cp:  s.cp,
-			cfg: s.cfg,
+			outputCh: s.notifyCh,
+			cp:       s.cp,
+			cfg:      s.cfg,
 		},
 		closed: make(chan struct{}),
 	}, nil

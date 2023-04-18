@@ -31,5 +31,19 @@ func Grinde(bytecode []byte) (methods []string, events []string, err error) {
 			events = append(events, common.Bytes2Hex(opcode.value))
 		}
 	}
+
+	return removeDuplicateString(methods), removeDuplicateString(events), nil
+}
+
+func removeDuplicateString(arr []string) (res []string) {
+	keys := make(map[string]struct{})
+	for _, s := range arr {
+		if _, ok := keys[s]; ok {
+			continue
+		}
+		keys[s] = struct{}{}
+		res = append(res, s)
+	}
+
 	return
 }

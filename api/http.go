@@ -41,5 +41,7 @@ func (s *Server) Listen() {
 }
 
 func SupportAPIs(b Backend) []service {
-	return []service{}
+	return []service{
+		&status{b},
+	}
 }

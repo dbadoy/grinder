@@ -45,7 +45,7 @@ func (s *status) get(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("%s\t%s\t%s\n", "blockchian", "checkpoint", "progress")))
 	}
 
-	w.Write([]byte(fmt.Sprintf("%d\t\t%d \t\t%.4f / 1.000\n", latest, cp, (float32(cp) / float32(latest)))))
+	w.Write([]byte(fmt.Sprintf("%d\t\t%d\t\t%.4f / 1.000\n", latest, cp, (float32(cp) / float32(latest)))))
 }
 
 func (s *status) post(w http.ResponseWriter, r *http.Request) { setMethodNotAllowed(w) }

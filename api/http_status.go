@@ -41,7 +41,7 @@ func (s *status) get(w http.ResponseWriter, r *http.Request) {
 	cp := s.b.Checkpoint().Checkpoint()
 
 	// description
-	if r.URL.Query().Get("v") != "" {
+	if r.URL.Query().Has("v") {
 		w.Write([]byte(fmt.Sprintf("%s\t%s\t%s\n", "blockchian", "checkpoint", "progress")))
 	}
 

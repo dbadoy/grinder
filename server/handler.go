@@ -62,7 +62,7 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 		}
 	}
 
-	for _, addr := range cas {
+	for idx, addr := range cas {
 		code, err := s.eth.CodeAt(context.Background(), addr, nil)
 		if err != nil {
 			return err
@@ -77,11 +77,24 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 		copy(r[0:], methods)
 		copy(r[len(methods):], events)
 
-		err = s.engine.Insert([]byte(addr.Hex()), &dto.Contract{
-			TxHash:     hash.Hex(),
-			Candidates: r,
-		})
+		contractDTO := &dto.Contract{
+			TxHash:        hash.Hex(),
+			Candidates:    r,
+			RelateAddress: nil,
+		}
 
+		// If 'cas' is greater than 1, an implement or logic
+		// contract exists. Append these related addresses to
+		// 'dto.Contract.RelateAddress'.
+		if len(cas) > 1 && idx == 1 /* Only Proxy contract */ {
+			related := cas[1:]
+			contractDTO.RelateAddress = make([]string, 0, len(related))
+			for _, addr := range related {
+				contractDTO.RelateAddress = append(contractDTO.RelateAddress, addr.Hex())
+			}
+		}
+
+		err = s.engine.Insert([]byte(addr.Hex()), contractDTO)
 		if err != nil {
 			// Proxy pattern allows different contracts to point to the
 			// same implementation contract, so we ignores 'ErrAlreadyExist'.

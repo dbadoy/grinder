@@ -86,7 +86,7 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 		// If 'cas' is greater than 1, an implement or logic
 		// contract exists. Append these related addresses to
 		// 'dto.Contract.RelateAddress'.
-		if len(cas) > 1 && idx == 1 /* Only Proxy contract */ {
+		if len(cas) > 1 && idx == 0 /* To Proxy contract */ {
 			related := cas[1:]
 			contractDTO.RelateAddress = make([]string, 0, len(related))
 			for _, addr := range related {

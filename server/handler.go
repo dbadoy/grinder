@@ -103,7 +103,10 @@ func (s *Server) handleContract(hash common.Hash, ca common.Address) error {
 			// reverted if the request fails. Skip without appending to the
 			// 'journals'.
 			if errors.Is(err, database.ErrAlreadyExist) {
-				continue
+				// But idx 0 is a newly deployed contract, so it shouldn't fail.
+				if idx != 0 {
+					continue
+				}
 			}
 
 			return fmt.Errorf("request failed in database: %v", err)

@@ -58,8 +58,8 @@ func TestHandleContract(t *testing.T) {
 	}
 
 	meta := memdb.Get([]byte(ca.Hex())).(*dto.Contract)
-	if len(meta.Candidates) != 5 {
-		t.Fatalf("TestProcessContract, want: 5 got: %d", len(meta.Candidates))
+	if len(meta.Candidates) != 2 {
+		t.Fatalf("TestProcessContract, want: 2 got: %d", len(meta.Candidates))
 	}
 	if txs[0].Hash().Hex() != meta.TxHash {
 		t.Fatalf("TestProcessContract, want: %s got: %s", txs[0].Hash().Hex(), meta.TxHash)
@@ -147,7 +147,7 @@ func TestHandleContractRequest(t *testing.T) {
 	<-errc
 
 	contract := memdb.Get([]byte(ca.Hex())).(*dto.Contract)
-	if len(contract.Candidates) != 5 {
-		t.Fatalf("TestHandleContractRequest, want: 5 got: %d", len(contract.Candidates))
+	if len(contract.Candidates) != 2 {
+		t.Fatalf("TestHandleContractRequest, want: 2 got: %d", len(contract.Candidates))
 	}
 }

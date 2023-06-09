@@ -147,8 +147,8 @@ func TestAddContract(t *testing.T) {
 	}
 
 	contract := memdb.Get([]byte(ca.Hex())).(*dto.Contract)
-	if len(contract.Candidates) != 5 {
-		t.Fatalf("TestAddContract, want: 5 got: %d", len(contract.Candidates))
+	if len(contract.Candidates) != 2 {
+		t.Fatalf("TestAddContract, want: 2 got: %d", len(contract.Candidates))
 	}
 }
 

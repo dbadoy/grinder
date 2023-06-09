@@ -12,6 +12,7 @@ import (
 	"github.com/dbadoy/grinder/pkg/checkpoint"
 	"github.com/dbadoy/grinder/pkg/database"
 	"github.com/dbadoy/grinder/pkg/database/es"
+	"github.com/dbadoy/grinder/pkg/database/memdb"
 	"github.com/dbadoy/grinder/pkg/ethclient"
 	"github.com/dbadoy/grinder/server"
 	"github.com/dbadoy/grinder/server/cft"
@@ -23,7 +24,7 @@ func main() {
 		fetchInterval = flag.Duration("fetch", time.Second, "interval time to fetch block from ethereum")
 		ethEndpoint   = flag.String("ethendpoint", "", "ethereum endpoint url (suggest: jsonrpc)")
 		cp            = flag.String("checkpoint", "checkpoint", "checkpoint name")
-		db            = flag.String("db", "elasticsearch", "database (elasticsearch)")
+		db            = flag.String("db", "elasticsearch", "database (elasticsearch|memory)")
 		dbpath        = flag.String("dbpath", "", "database urls (url1,url2,url3...)")
 		cluster       = flag.String("cluster", "", "cluster node list (IP:PORT,IP:PORT,IP:PORT...)")
 		http          = flag.Int("http", 0, "http listening port (0 = not support http)")
@@ -44,6 +45,8 @@ func main() {
 	switch *db {
 	case "elasticsearch":
 		database, err = es.New(strings.Split(*dbpath, ","))
+	case "memory":
+		database = memdb.New()
 	default:
 		err = errors.New("invalid database")
 	}
@@ -64,10 +67,15 @@ func main() {
 	switch len(*cluster) {
 	case 0:
 		// Solo
-		engine = &cft.Solo{}
+		engine, err = cft.NewSoloEngine(nil, database, checkpoint)
 	default:
-		// Print CFT info
-		engine = &cft.CFT{}
+		// // Print CFT info
+		// engine = &cft.CFT{}
+		panic("only support solo mode")
+	}
+
+	if err != nil {
+		panic(fmt.Errorf("engine creation failed: %v", err))
 	}
 
 	// Fetcher
